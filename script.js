@@ -67,9 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
       requestAnimationFrame(step);
     };
 
-    // Start swinging as the card drops in
+    // Drop in and start swinging when the card scrolls into view
     render();
-    setTimeout(kick, 700);
+    const lanyard = document.getElementById('lanyard');
+    const dropIO = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      lanyard.classList.add('is-dropped');
+      setTimeout(kick, 350);
+      dropIO.disconnect();
+    }, { threshold: 0.35 });
+    dropIO.observe(lanyard);
 
     // Drag: the card points from the pivot towards the pointer
     const pivot = () => {
@@ -111,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
       const dy = window.scrollY - lastY;
       lastY = window.scrollY;
-      if (window.scrollY < window.innerHeight * 1.2) {
+      const r = lanyard.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) {
         velocity += Math.max(-0.6, Math.min(0.6, dy * 0.012));
         kick();
       }
