@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('hero-in')));
 
+  // Reduced motion: no swinging, but the card still flips on click / Enter
+  const idCardEl = document.getElementById('idcard');
+  if (idCardEl && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const simpleFlip = () => idCardEl.setAttribute('aria-pressed', String(idCardEl.classList.toggle('is-flipped')));
+    idCardEl.addEventListener('click', (e) => { if (!e.target.closest('a')) simpleFlip(); });
+    idCardEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); simpleFlip(); } });
+  }
+
   // Dangling ID card: a simple pendulum you can grab, swing and let go
   const swing = document.getElementById('lanyardSwing');
   const card = document.getElementById('idcard');
@@ -86,32 +94,57 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let prevAngle = 0;
     let prevTime = 0;
+    let grabOffset = 0;        // keeps the card from jumping when grabbed
+    let downX = 0, downY = 0, downTime = 0, moved = false;
+
+    const flip = () => {
+      const flipped = card.classList.toggle('is-flipped');
+      card.setAttribute('aria-pressed', String(flipped));
+      velocity += flipped ? 1.2 : -1.2;   // a little wobble as it turns
+      kick();
+    };
+    const pointerAngle = (e) => {
+      const p = pivot();
+      return Math.atan2(p.x - e.clientX, e.clientY - p.y);
+    };
+
     card.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('a')) return;  // let the "work together" link work normally
       dragging = true;
+      moved = false;
+      downX = e.clientX; downY = e.clientY; downTime = performance.now();
       card.setPointerCapture(e.pointerId);
+      grabOffset = angle - pointerAngle(e);
       prevAngle = angle;
-      prevTime = performance.now();
+      prevTime = downTime;
       kick();
     });
     card.addEventListener('pointermove', (e) => {
       if (!dragging) return;
-      const p = pivot();
-      const target = Math.atan2(p.x - e.clientX, e.clientY - p.y);
-      angle = Math.max(-MAX, Math.min(MAX, target));
+      if (!moved && Math.hypot(e.clientX - downX, e.clientY - downY) < 6) return;
+      moved = true;
+      angle = Math.max(-MAX, Math.min(MAX, pointerAngle(e) + grabOffset));
       const now = performance.now();
       const dt = Math.max((now - prevTime) / 1000, 0.008);
       velocity = (angle - prevAngle) / dt;
       prevAngle = angle;
       prevTime = now;
     });
-    const release = () => {
+    const release = (e) => {
       if (!dragging) return;
       dragging = false;
+      if (!moved && e.type === 'pointerup' && performance.now() - downTime < 500) {
+        flip();                           // a quick tap flips the card
+        return;
+      }
       velocity = Math.max(-6, Math.min(6, velocity));
       kick();
     };
     card.addEventListener('pointerup', release);
     card.addEventListener('pointercancel', release);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+    });
 
     // A little sway when the page scrolls
     let lastY = window.scrollY;
