@@ -643,3 +643,90 @@ em { font-style: italic; font-weight: 400; }
 
 .pcard--feature .growth { flex: 1; height: auto; min-height: 270px; }
 @media (max-width: 640px) { .pcard--feature .growth { min-height: 230px; } }
+
+/* =========================================================
+   Hero intro: curtain + name reveal
+   --t0 is when the hero starts animating (after the curtain lifts).
+   ========================================================= */
+:root { --t0: .15s; }
+html.intro-long { --t0: 1.35s; }
+
+/* Opening curtain: only shown on the first visit of a session */
+.intro { display: none; }
+html.intro-long .intro {
+  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+  background: radial-gradient(700px 500px at 50% 45%, var(--rich), var(--royal) 70%);
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1s cubic-bezier(.76, 0, .24, 1) .95s;
+}
+html.intro-long.hero-in .intro { clip-path: inset(0 0 100% 0); }
+.intro__inner { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.intro__mark {
+  position: relative; font-family: var(--font-display); font-size: clamp(4rem, 12vw, 6.5rem); line-height: 1;
+  color: var(--lavender); font-weight: 600;
+  animation: intro-mark .8s var(--ease) both;
+}
+.intro__star {
+  position: absolute; top: -.05em; right: -.55em; font-size: .42em; color: var(--yellow);
+  animation: intro-star .9s .25s cubic-bezier(.3, 1.6, .5, 1) both;
+}
+.intro__line { width: 140px; height: 2px; background: var(--yellow); transform-origin: left; animation: intro-line .7s .3s var(--ease) both; }
+.intro__word {
+  font-size: .72rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: var(--lavender);
+  animation: intro-word .8s .4s var(--ease) both;
+}
+@keyframes intro-mark { from { opacity: 0; transform: translateY(30px) scale(.9); } }
+@keyframes intro-star { from { opacity: 0; transform: scale(0) rotate(-180deg); } }
+@keyframes intro-line { from { transform: scaleX(0); } }
+@keyframes intro-word { from { opacity: 0; letter-spacing: .6em; } }
+
+/* Name: letters rise out of a mask */
+.hero__line { display: block; position: relative; }
+.hero__line--em { display: inline-block; }
+.js [data-split] {
+  display: inline-block; overflow: hidden; vertical-align: top;
+  padding: 0 .1em .14em; margin: 0 -.1em -.14em;
+}
+.char { display: inline-block; will-change: transform; }
+.js .char {
+  transform: translateY(115%) rotate(8deg);
+  transition: transform 1s cubic-bezier(.2, .85, .2, 1);
+  transition-delay: calc(var(--t0) + .1s + var(--i) * 45ms);
+}
+.js .hero__line--em .char { transition-delay: calc(var(--t0) + .45s + var(--i) * 45ms); }
+.hero-in .char { transform: none; }
+
+/* Sparkle that spins in and lands after "Okechukwu." */
+.hero__star {
+  position: absolute; top: .05em; right: -.55em; font-size: .32em; font-style: normal; color: var(--yellow);
+  -webkit-text-stroke: 1px var(--rich);
+}
+.js .hero__star { opacity: 0; transform: translate(-6em, 1.5em) rotate(-260deg) scale(.3); transition: opacity .3s, transform 1.1s cubic-bezier(.3, 1.3, .5, 1); transition-delay: calc(var(--t0) + 1.05s); }
+.hero-in .hero__star { opacity: 1; transform: none; animation: twinkle 3.5s calc(var(--t0) + 2.3s) ease-in-out infinite; }
+
+/* Hand-drawn yellow underline under "Okechukwu." */
+.hero__swoosh { position: absolute; left: 0; right: 0; bottom: -.06em; width: 100%; height: .22em; overflow: visible; pointer-events: none; }
+.hero__swoosh path { fill: none; stroke: var(--yellow); stroke-width: 6; stroke-linecap: round; }
+.js .hero__swoosh path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s var(--ease) calc(var(--t0) + 1s); }
+.hero-in .hero__swoosh path { stroke-dashoffset: 0; }
+
+/* Everything else in the hero: soft rise, in sequence */
+.js .hi { opacity: 0; translate: 0 22px; transition: opacity .9s var(--ease), translate .9s var(--ease); transition-delay: calc(var(--t0) + var(--at, 0s)); }
+.js .eyebrow.hi { letter-spacing: .4em; transition-property: opacity, translate, letter-spacing; }
+.hero-in .hi { opacity: 1; translate: 0 0; }
+.hero-in .eyebrow.hi { letter-spacing: .18em; }
+
+.js .hi-pop { opacity: 0; scale: .4; transition: opacity .5s var(--ease), scale .8s cubic-bezier(.3, 1.6, .5, 1); transition-delay: calc(var(--t0) + var(--at, 0s)); }
+.hero-in .hi-pop { opacity: 1; scale: 1; }
+
+/* Portrait: the arch rises, then the photo wipes up into it */
+.js .portrait { opacity: 0; translate: 0 50px; transition: opacity 1s var(--ease), translate 1.2s var(--ease); transition-delay: calc(var(--t0) + .3s); }
+.js .portrait img { clip-path: inset(100% 0 0 0); scale: 1.25; transition: clip-path 1.3s cubic-bezier(.7, 0, .2, 1), scale 1.8s var(--ease), transform 1.2s var(--ease); transition-delay: calc(var(--t0) + .6s); }
+.hero-in .portrait { opacity: 1; translate: 0 0; }
+.hero-in .portrait img { clip-path: inset(0 0 0 0); scale: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.intro-long .intro { display: none; }
+  .js .char, .js .hi, .js .hi-pop, .js .portrait, .js .portrait img, .js .hero__star { opacity: 1; transform: none; translate: none; scale: none; clip-path: none; }
+  .js .hero__swoosh path { stroke-dashoffset: 0; }
+}

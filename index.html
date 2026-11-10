@@ -21,8 +21,27 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Runs before the page paints, so the intro starts without a flash.
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = false;
+      try { seen = sessionStorage.getItem('introSeen') === '1'; sessionStorage.setItem('introSeen', '1'); } catch (e) {}
+      if (!reduce && !seen) d.classList.add('intro-long');
+    })();
+  </script>
 </head>
 <body id="top">
+  <!-- Opening curtain (skipped on repeat visits and for reduced motion) -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro__inner">
+      <span class="intro__mark">G<span class="intro__star">✦</span></span>
+      <span class="intro__line"></span>
+      <span class="intro__word">Social Media &amp; Content Strategist</span>
+    </div>
+  </div>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ============ NAV ============ -->
@@ -56,32 +75,32 @@
       <div class="hero__glow" aria-hidden="true"></div>
       <div class="container hero__grid">
         <div class="hero__text">
-          <p class="eyebrow reveal">Social Media &amp; Content Strategist</p>
-          <h1 class="hero__title reveal">Goodness<br><em>Okechukwu.</em></h1>
-          <p class="hero__sub reveal">Your story. A clear strategy.<br>A stronger online presence.</p>
-          <p class="hero__body reveal">I help brands, founders, and personal brands turn their expertise into content that connects, and show up consistently on <strong>LinkedIn</strong>, <strong>X</strong>, and <strong>Instagram</strong>.</p>
-          <div class="hero__actions reveal">
+          <p class="eyebrow hi" style="--at:0s">Social Media &amp; Content Strategist</p>
+          <h1 class="hero__title" id="heroTitle" aria-label="Goodness Okechukwu"><span class="hero__line"><span data-split>Goodness</span></span><span class="hero__line hero__line--em"><em data-split>Okechukwu.</em><svg class="hero__swoosh" viewBox="0 0 400 30" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M6 22 C 90 10, 220 4, 394 12"/></svg><span class="hero__star" aria-hidden="true">✦</span></span></h1>
+          <p class="hero__sub hi" style="--at:1.15s">Your story. A clear strategy.<br>A stronger online presence.</p>
+          <p class="hero__body hi" style="--at:1.3s">I help brands, founders, and personal brands turn their expertise into content that connects, and show up consistently on <strong>LinkedIn</strong>, <strong>X</strong>, and <strong>Instagram</strong>.</p>
+          <div class="hero__actions hi" style="--at:1.45s">
             <a href="#contact" class="btn btn--primary">Let's Build Your Online Presence <span aria-hidden="true">→</span></a>
             <a href="#projects" class="btn btn--ghost">Explore my work</a>
           </div>
         </div>
 
-        <div class="hero__visual reveal">
+        <div class="hero__visual">
           <div class="portrait">
             <img src="assets/portrait.jpg" alt="Portrait of Goodness Okechukwu" width="731" height="1280" fetchpriority="high">
           </div>
-          <span class="sparkle sparkle--1" aria-hidden="true">✦</span>
-          <span class="sparkle sparkle--2" aria-hidden="true">✦</span>
+          <span class="sparkle sparkle--1 hi-pop" style="--at:1.6s" aria-hidden="true">✦</span>
+          <span class="sparkle sparkle--2 hi-pop" style="--at:1.8s" aria-hidden="true">✦</span>
 
-          <div class="stat-chip stat-chip--a">
+          <div class="stat-chip stat-chip--a hi-pop" style="--at:1.5s">
             <span class="stat-chip__value">3.8M+</span>
             <span class="stat-chip__label">LinkedIn post impressions</span>
           </div>
-          <div class="stat-chip stat-chip--b">
+          <div class="stat-chip stat-chip--b hi-pop" style="--at:1.75s">
             <span class="stat-chip__value">18.7K → 82.7K</span>
             <span class="stat-chip__label">Instagram views · 90 days</span>
           </div>
-          <p class="portrait__caption"><em>The person behind the strategy</em> ✦</p>
+          <p class="portrait__caption hi" style="--at:1.9s"><em>The person behind the strategy</em> ✦</p>
         </div>
       </div>
     </section>

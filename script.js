@@ -12,6 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  // Hero intro: split the name into letters, then start the sequence
+  const root = document.documentElement;
+  document.querySelectorAll('[data-split]').forEach((el) => {
+    const text = el.textContent;
+    el.textContent = '';
+    el.setAttribute('aria-hidden', 'true');
+    [...text].forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.style.setProperty('--i', i);
+      span.textContent = ch;
+      el.appendChild(span);
+    });
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('hero-in')));
+  const intro = document.getElementById('intro');
+  if (root.classList.contains('intro-long')) {
+    setTimeout(() => intro.remove(), 2200);
+  } else {
+    intro.remove();
+  }
+
   // Nav background + back-to-top button on scroll
   const onScroll = () => {
     const y = window.scrollY;
