@@ -27,11 +27,95 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('hero-in')));
-  const intro = document.getElementById('intro');
-  if (root.classList.contains('intro-long')) {
-    setTimeout(() => intro.remove(), 2200);
-  } else {
-    intro.remove();
+
+  // Dangling ID card: a simple pendulum you can grab, swing and let go
+  const swing = document.getElementById('lanyardSwing');
+  const card = document.getElementById('idcard');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (swing && card && !calm) {
+    let angle = 0.32;          // radians; starts tilted so it swings in after dropping
+    let velocity = 0;
+    let dragging = false;
+    let running = false;
+    let last = 0;
+    const STIFFNESS = 14;      // pull back to centre
+    const DAMPING = 1.1;       // how quickly the swing settles
+    const MAX = 1.1;           // never swing past ~63deg
+
+    const render = () => {
+      swing.style.setProperty('--swing', `${angle * 57.2958}deg`);
+      card.style.setProperty('--shine', `${-60 + angle * 160}%`);
+    };
+    const step = (now) => {
+      const dt = Math.min((now - last) / 1000, 0.032);
+      last = now;
+      if (!dragging) {
+        velocity += (-STIFFNESS * Math.sin(angle) - DAMPING * velocity) * dt;
+        angle = Math.max(-MAX, Math.min(MAX, angle + velocity * dt));
+      }
+      render();
+      if (dragging || Math.abs(angle) > 0.0005 || Math.abs(velocity) > 0.0005) {
+        requestAnimationFrame(step);
+      } else {
+        running = false;
+      }
+    };
+    const kick = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      requestAnimationFrame(step);
+    };
+
+    // Start swinging as the card drops in
+    render();
+    setTimeout(kick, 700);
+
+    // Drag: the card points from the pivot towards the pointer
+    const pivot = () => {
+      const r = swing.getBoundingClientRect();
+      const box = swing.parentElement.getBoundingClientRect();
+      return { x: box.left + box.width / 2, y: Math.min(r.top, box.top) };
+    };
+    let prevAngle = 0;
+    let prevTime = 0;
+    card.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      card.setPointerCapture(e.pointerId);
+      prevAngle = angle;
+      prevTime = performance.now();
+      kick();
+    });
+    card.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const p = pivot();
+      const target = Math.atan2(p.x - e.clientX, e.clientY - p.y);
+      angle = Math.max(-MAX, Math.min(MAX, target));
+      const now = performance.now();
+      const dt = Math.max((now - prevTime) / 1000, 0.008);
+      velocity = (angle - prevAngle) / dt;
+      prevAngle = angle;
+      prevTime = now;
+    });
+    const release = () => {
+      if (!dragging) return;
+      dragging = false;
+      velocity = Math.max(-6, Math.min(6, velocity));
+      kick();
+    };
+    card.addEventListener('pointerup', release);
+    card.addEventListener('pointercancel', release);
+
+    // A little sway when the page scrolls
+    let lastY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const dy = window.scrollY - lastY;
+      lastY = window.scrollY;
+      if (window.scrollY < window.innerHeight * 1.2) {
+        velocity += Math.max(-0.6, Math.min(0.6, dy * 0.012));
+        kick();
+      }
+    }, { passive: true });
   }
 
   // Nav background + back-to-top button on scroll

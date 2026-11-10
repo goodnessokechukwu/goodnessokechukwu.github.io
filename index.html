@@ -21,27 +21,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>
-    // Runs before the page paints, so the intro starts without a flash.
-    (function () {
-      var d = document.documentElement;
-      d.classList.add('js');
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var seen = false;
-      try { seen = sessionStorage.getItem('introSeen') === '1'; sessionStorage.setItem('introSeen', '1'); } catch (e) {}
-      if (!reduce && !seen) d.classList.add('intro-long');
-    })();
-  </script>
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body id="top">
-  <!-- Opening curtain (skipped on repeat visits and for reduced motion) -->
-  <div class="intro" id="intro" aria-hidden="true">
-    <div class="intro__inner">
-      <span class="intro__mark">G<span class="intro__star">✦</span></span>
-      <span class="intro__line"></span>
-      <span class="intro__word">Social Media &amp; Content Strategist</span>
-    </div>
-  </div>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ============ NAV ============ -->
@@ -74,6 +56,37 @@
     <section class="hero">
       <div class="hero__glow" aria-hidden="true"></div>
       <div class="container hero__grid">
+        <!-- Dangling ID card (drag it!) -->
+        <div class="lanyard" id="lanyard">
+          <div class="lanyard__drop">
+          <div class="lanyard__swing" id="lanyardSwing">
+            <span class="lanyard__strap" aria-hidden="true"></span>
+            <span class="lanyard__clip" aria-hidden="true"></span>
+            <div class="idcard" id="idcard" role="img" aria-label="ID card: Goodness 'Angel' Okechukwu, Social Media and Content Strategist, @angel_okechukwu">
+              <span class="idcard__slot" aria-hidden="true"></span>
+              <div class="idcard__head">
+                <span class="idcard__brand">Goodness<span>.</span></span>
+                <span class="idcard__pass">Strategist pass</span>
+              </div>
+              <div class="idcard__body">
+                <div class="idcard__photo"><img src="assets/portrait.jpg" alt="" width="731" height="1280"></div>
+                <p class="idcard__name">Goodness <em>“Angel”</em> Okechukwu</p>
+                <p class="idcard__role">Social Media &amp; Content Strategist</p>
+                <dl class="idcard__meta">
+                  <div><dt>ID</dt><dd>GO-2026</dd></div>
+                  <div><dt>Access</dt><dd>LinkedIn · X · IG</dd></div>
+                </dl>
+              </div>
+              <div class="idcard__foot">
+                <span class="idcard__barcode" aria-hidden="true"></span>
+                <span class="idcard__handle">@angel_okechukwu</span>
+              </div>
+              <span class="idcard__shine" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+        </div>
+
         <div class="hero__text">
           <p class="eyebrow hi" style="--at:0s">Social Media &amp; Content Strategist</p>
           <h1 class="hero__title" id="heroTitle" aria-label="Goodness Okechukwu"><span class="hero__line"><span data-split>Goodness</span></span><span class="hero__line hero__line--em"><em data-split>Okechukwu.</em><svg class="hero__swoosh" viewBox="0 0 400 30" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M6 22 C 90 10, 220 4, 394 12"/></svg><span class="hero__star" aria-hidden="true">✦</span></span></h1>
