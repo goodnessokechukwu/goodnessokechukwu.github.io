@@ -67,13 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!entry.isIntersecting) return;
         const el = entry.target;
         const target = parseFloat(el.dataset.count);
+        const from = parseFloat(el.dataset.from || '0');
         const decimals = parseInt(el.dataset.decimals || '0', 10);
         const start = performance.now();
         const dur = 1600;
         const tick = (now) => {
           const p = Math.min((now - start) / dur, 1);
           const eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = (target * eased).toFixed(decimals);
+          el.textContent = (from + (target - from) * eased).toFixed(decimals);
           if (p < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
@@ -81,6 +82,49 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }, { threshold: 0.6 });
     counters.forEach((el) => countIO.observe(el));
+  }
+
+  // Project cards: staggered entrance (also triggers the growth chart)
+  const pcards = document.querySelectorAll('.pcard');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    pcards.forEach((card, i) => card.style.setProperty('--delay', `${(i % 2) * 0.12 + (i > 1 ? 0.1 : 0)}s`));
+    const cardIO = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        cardIO.unobserve(entry.target);
+      });
+    }, { threshold: 0.2 });
+    pcards.forEach((c) => cardIO.observe(c));
+  } else {
+    pcards.forEach((c) => c.classList.add('is-in'));
+  }
+
+  // 3D tilt + cursor spotlight (mouse/trackpad only)
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (finePointer && !reduceMotion) {
+    const bindTilt = (el, max) => {
+      let frame = 0;
+      el.addEventListener('pointermove', (e) => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = (e.clientY - r.top) / r.height;
+          el.style.setProperty('--ry', `${(x - 0.5) * max}deg`);
+          el.style.setProperty('--rx', `${(0.5 - y) * max}deg`);
+          el.style.setProperty('--mx', `${x * 100}%`);
+          el.style.setProperty('--my', `${y * 100}%`);
+        });
+      });
+      el.addEventListener('pointerleave', () => {
+        cancelAnimationFrame(frame);
+        el.style.setProperty('--rx', '0deg');
+        el.style.setProperty('--ry', '0deg');
+      });
+    };
+    document.querySelectorAll('[data-tilt]').forEach((el) => bindTilt(el, 22));
+    document.querySelectorAll('[data-tilt-soft]').forEach((el) => bindTilt(el, 7));
   }
 
   // Highlight the nav link of the section in view
