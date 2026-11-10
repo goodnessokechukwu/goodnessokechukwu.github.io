@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const flip = () => {
       const flipped = card.classList.toggle('is-flipped');
       card.setAttribute('aria-pressed', String(flipped));
-      velocity += flipped ? 1.2 : -1.2;   // a little wobble as it turns
+      velocity += flipped ? 0.5 : -0.5;   // a little wobble as it turns
       kick();
     };
     const pointerAngle = (e) => {
