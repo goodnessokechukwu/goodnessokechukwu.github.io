@@ -320,6 +320,67 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-tilt-soft]').forEach((el) => bindTilt(el, 7));
   }
 
+  // Canva designs: full-size viewer with page-by-page navigation
+  const lb = document.getElementById('lightbox');
+  if (lb && typeof lb.showModal === 'function') {
+    const img = document.getElementById('lightboxImg');
+    const titleEl = document.getElementById('lightboxTitle');
+    const countEl = document.getElementById('lightboxCount');
+    const prev = document.getElementById('lightboxPrev');
+    const next = document.getElementById('lightboxNext');
+    let pages = [];
+    let idx = 0;
+    let title = '';
+    let opener = null;
+
+    const show = (i, dir = 0) => {
+      idx = (i + pages.length) % pages.length;
+      img.src = pages[idx];
+      img.alt = `${title}, page ${idx + 1} of ${pages.length}`;
+      countEl.textContent = pages.length > 1 ? `${idx + 1} / ${pages.length}` : '';
+      prev.hidden = next.hidden = pages.length < 2;
+      img.style.setProperty('--dir', `${dir * 40}px`);
+      img.classList.remove('is-changing');
+      void img.offsetWidth;            // restart the swap animation
+      img.classList.add('is-changing');
+      // warm up the next page so it appears instantly
+      if (pages.length > 1) new Image().src = pages[(idx + 1) % pages.length];
+    };
+    document.querySelectorAll('[data-gallery]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        opener = btn;
+        pages = btn.dataset.gallery.split(',');
+        title = btn.dataset.title;
+        titleEl.textContent = title;
+        show(0);
+        lb.showModal();
+        document.body.classList.add('lightbox-open');
+      });
+    });
+    const close = () => lb.close();
+    lb.addEventListener('close', () => {
+      document.body.classList.remove('lightbox-open');
+      if (opener) opener.focus();
+    });
+    document.getElementById('lightboxClose').addEventListener('click', close);
+    prev.addEventListener('click', () => show(idx - 1, -1));
+    next.addEventListener('click', () => show(idx + 1, 1));
+    // click the dark area around the design to close
+    lb.addEventListener('click', (e) => { if (e.target.classList.contains('lightbox__stage')) close(); });
+    lb.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(idx - 1, -1);
+      if (e.key === 'ArrowRight') show(idx + 1, 1);
+    });
+    // swipe on touch screens
+    let sx = 0, sy = 0;
+    lb.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    lb.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      if (pages.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
   // Contact form
   const form = document.getElementById('contactForm');
   if (!form) return;
