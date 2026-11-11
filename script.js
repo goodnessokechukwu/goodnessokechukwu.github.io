@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
         root.style.setProperty('--tx', x + 'px');
         root.style.setProperty('--ty', y + 'px');
         root.style.setProperty('--tr', Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 'px');
-        document.startViewTransition(() => setTheme(next));
+        root.classList.add('theme-switching');
+        const vt = document.startViewTransition(() => setTheme(next));
+        vt.finished.finally(() => root.classList.remove('theme-switching'));
       } else if (!reduce) {
         root.classList.add('theme-fade');
         setTheme(next);
@@ -205,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Nav background + back-to-top button on scroll
   const onScroll = () => {
     const y = window.scrollY;
-    nav.classList.toggle('is-scrolled', y > 20);
+    nav.classList.toggle('is-scrolled', y > 20 || nav.classList.contains('nav--solid'));
     toTop.classList.toggle('is-visible', y > 700);
   };
   onScroll();
@@ -224,10 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Seamless marquee: duplicate the list once
   const track = document.querySelector('.marquee__track');
-  const list = track.querySelector('.marquee__list');
-  const clone = list.cloneNode(true);
-  clone.setAttribute('aria-hidden', 'true');
-  track.appendChild(clone);
+  if (track) {
+    const clone = track.querySelector('.marquee__list').cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    track.appendChild(clone);
+  }
 
   // Reveal on scroll
   const reveals = document.querySelectorAll('.reveal');
@@ -317,21 +320,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-tilt-soft]').forEach((el) => bindTilt(el, 7));
   }
 
-  // Highlight the nav link of the section in view
-  const navAnchors = [...links.querySelectorAll('a[href^="#"]:not(.btn)')];
-  const sections = navAnchors.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
-  if ('IntersectionObserver' in window) {
-    const secIO = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        navAnchors.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === `#${entry.target.id}`));
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach((s) => secIO.observe(s));
-  }
-
   // Contact form
   const form = document.getElementById('contactForm');
+  if (!form) return;
   const status = document.getElementById('formStatus');
   const submitBtn = form.querySelector('button[type="submit"]');
 

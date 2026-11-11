@@ -4,7 +4,9 @@ Personal portfolio for Goodness Okechukwu, Social Media & Content Strategist.
 
 Plain HTML, CSS and JavaScript — no build step. Open `index.html` in a browser to preview.
 
-- `index.html` — all page content (edit text here)
+- `index.html` — home page (hero + links to every page)
+- `about.html`, `services.html`, `tools.html`, `experience.html`, `projects.html`, `results.html`, `testimonials.html`, `contact.html` — one page per menu item
+  (the top menu and footer are repeated in each page, so change them in every file)
 - `styles.css` — design and brand colours (see the `:root` block at the top)
 - `script.js` — menu, animations and the contact form
 - `assets/` — portrait, favicon and social-share image
