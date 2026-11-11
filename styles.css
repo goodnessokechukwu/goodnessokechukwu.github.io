@@ -1394,3 +1394,14 @@ body.lightbox-open { overflow: hidden; }
 .xproj .mcard__shots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .xproj .mcard__shots--one { grid-template-columns: minmax(0, 1fr); }
 @media (max-width: 1000px) { .xproj__accounts { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- TikTok: Blush Bloom (compact card) ---------- */
+.pbadge--tt { background: #000; border: 1px solid rgba(255,255,255,.25); }
+.pbadge--tt svg { fill: #fff; filter: drop-shadow(1px 1px 0 #fe2c55) drop-shadow(-1px -1px 0 #25f4ee); }
+.mcard__desc { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--lavender); }
+.mcard__shots--tt { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+.vcard--mini { border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 0 0 1px rgba(239,208,255,.2); }
+.vcard--mini video { display: block; width: 100%; height: 100%; aspect-ratio: 416 / 752; object-fit: cover; background: #000; }
+.shot--tt { aspect-ratio: 416 / 752; }
+.mcard__shots--tt > * { min-width: 0; }
+.shot--tt img { width: 100%; height: 100%; object-fit: cover; object-position: left top; }

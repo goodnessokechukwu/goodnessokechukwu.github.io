@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Videos: only one plays at a time
-  const videos = document.querySelectorAll('.vcard video');
+  const videos = document.querySelectorAll('.vcard video, .vcard--mini video');
   videos.forEach((v) => v.addEventListener('play', () => {
     videos.forEach((other) => { if (other !== v) other.pause(); });
   }));
