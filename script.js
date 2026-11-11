@@ -12,8 +12,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Hero intro: split the name into letters, then start the sequence
+  // Light / dark theme toggle (the starting theme is set in <head> to avoid a flash)
   const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const syncThemeUI = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    themeBtn.setAttribute('aria-pressed', String(dark));
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    if (themeMeta) themeMeta.setAttribute('content', dark ? '#12001b' : '#34014e');
+  };
+  const setTheme = (theme) => {
+    root.setAttribute('data-theme', theme);
+    try { localStorage.setItem('theme', theme); } catch (e) {}
+    syncThemeUI();
+  };
+  if (themeBtn) {
+    syncThemeUI();
+    themeBtn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (document.startViewTransition && !reduce) {
+        // Grow the new theme as a circle out of the button
+        const r = themeBtn.getBoundingClientRect();
+        const x = r.left + r.width / 2, y = r.top + r.height / 2;
+        root.style.setProperty('--tx', x + 'px');
+        root.style.setProperty('--ty', y + 'px');
+        root.style.setProperty('--tr', Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 'px');
+        document.startViewTransition(() => setTheme(next));
+      } else if (!reduce) {
+        root.classList.add('theme-fade');
+        setTheme(next);
+        setTimeout(() => root.classList.remove('theme-fade'), 550);
+      } else {
+        setTheme(next);
+      }
+    });
+    // Follow the device setting until the visitor picks a theme themselves
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      let saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (err) {}
+      if (!saved) { root.setAttribute('data-theme', e.matches ? 'dark' : 'light'); syncThemeUI(); }
+    });
+  }
+
+  // Hero intro: split the name into letters, then start the sequence
   document.querySelectorAll('[data-split]').forEach((el) => {
     const text = el.textContent;
     el.textContent = '';
