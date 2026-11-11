@@ -1410,3 +1410,33 @@ body.lightbox-open { overflow: hidden; }
 .others__logo { display: block; height: 56px; width: auto; }
 .others__logo--round { width: 56px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(239,208,255,.25); }
 .others__logo--tile { height: 56px; padding: 0 14px; background: #fff; border-radius: 12px; object-fit: contain; box-sizing: border-box; max-width: 190px; }
+
+/* ---------- Testimonials: authentic screenshots ---------- */
+.section__sub { margin: 14px auto 0; max-width: 560px; color: var(--ink-soft); font-size: 1.05rem; }
+.tshots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.tshot {
+  margin: 0; padding: 14px 14px 20px; border-radius: var(--radius);
+  background: var(--white); border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 16px;
+  transition: transform .35s var(--ease), box-shadow .35s;
+}
+.tshot:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+.tshot--accent { background: var(--lavender); border-color: transparent; }
+.tshot__img {
+  all: unset; position: relative; display: block; cursor: zoom-in; border-radius: 14px; overflow: hidden;
+  background: #fff; box-shadow: 0 0 0 1px var(--line);
+}
+.tshot__img img { display: block; width: 100%; height: auto; }
+.tshot__img:focus-visible { outline: 3px solid var(--yellow); outline-offset: 4px; }
+.tshot__img .shot__zoom { opacity: 0; transition: opacity .25s; }
+.tshot__img:hover .shot__zoom, .tshot__img:focus-visible .shot__zoom { opacity: 1; }
+.tshot figcaption { padding: 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.tshot figcaption strong { color: var(--royal); font-size: 1.02rem; }
+.tshot figcaption em { font-style: normal; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--rich); }
+.tshot figcaption em::before { content: "| "; color: var(--ink-soft); font-weight: 400; }
+[data-theme="dark"] .tshot { background: var(--surface); border-color: rgba(239,208,255,.14); }
+[data-theme="dark"] .tshot--accent { background: var(--surface-2); border-color: rgba(252,234,4,.25); }
+[data-theme="dark"] .tshot figcaption strong { color: #fff; }
+[data-theme="dark"] .tshot figcaption em { color: var(--yellow); }
+@media (max-width: 1000px) { .tshots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .tshots { grid-template-columns: minmax(0, 1fr); max-width: 440px; margin-inline: auto; } .tshot__img .shot__zoom { opacity: 1; } }
