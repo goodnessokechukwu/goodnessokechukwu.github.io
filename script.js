@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prev = document.getElementById('lightboxPrev');
     const next = document.getElementById('lightboxNext');
     let pages = [];
+    let captions = [];
     let idx = 0;
     let title = '';
     let opener = null;
@@ -336,7 +337,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const show = (i, dir = 0) => {
       idx = (i + pages.length) % pages.length;
       img.src = pages[idx];
-      img.alt = `${title}, page ${idx + 1} of ${pages.length}`;
+      const caption = captions[idx] || '';
+      titleEl.textContent = caption ? `${title} · ${caption}` : title;
+      img.alt = caption ? `${title}: ${caption}` : `${title}, page ${idx + 1} of ${pages.length}`;
       countEl.textContent = pages.length > 1 ? `${idx + 1} / ${pages.length}` : '';
       prev.hidden = next.hidden = pages.length < 2;
       img.style.setProperty('--dir', `${dir * 40}px`);
@@ -350,8 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         opener = btn;
         pages = btn.dataset.gallery.split(',');
+        captions = (btn.dataset.captions || '').split('|');
         title = btn.dataset.title;
-        titleEl.textContent = title;
+        lb.classList.toggle('is-canva', btn.dataset.source === 'canva');
         show(0);
         lb.showModal();
         document.body.classList.add('lightbox-open');
@@ -380,6 +384,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pages.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
     }, { passive: true });
   }
+
+  // Videos: only one plays at a time
+  const videos = document.querySelectorAll('.vcard video');
+  videos.forEach((v) => v.addEventListener('play', () => {
+    videos.forEach((other) => { if (other !== v) other.pause(); });
+  }));
 
   // Contact form
   const form = document.getElementById('contactForm');
