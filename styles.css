@@ -1405,3 +1405,4 @@ body.lightbox-open { overflow: hidden; }
 .shot--tt { aspect-ratio: 416 / 752; }
 .mcard__shots--tt > * { min-width: 0; }
 .shot--tt img { width: 100%; height: 100%; object-fit: cover; object-position: left top; }
+.others__proof { align-self: flex-start; margin-top: 6px; }
