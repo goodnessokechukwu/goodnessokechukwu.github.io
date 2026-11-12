@@ -1466,3 +1466,5 @@ body.lightbox-open { overflow: hidden; }
 .mcard__link { align-self: flex-start; margin-top: 2px; }
 /* ID card uses a dedicated headshot, so no zoom is needed */
 .idcard__photo img { object-position: 50% 50%; transform: none; }
+.tool--tiktok .tool__icon { background: #000; }
+.tool--tiktok .tool__icon svg { filter: drop-shadow(1.5px 1.5px 0 #FE2C55) drop-shadow(-1.5px -1.5px 0 #25F4EE); }
